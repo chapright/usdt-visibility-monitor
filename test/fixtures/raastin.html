@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="fa" dir="rtl"><head><meta charset="utf-8"><title>قیمت لحظه ای تتر | راستین</title></head><body>
+
+<!--
+  Deliberately hostile fixture for the raastin adapter. It reproduces every
+  trap found on the real page:
+    - captions carry a ZWNJ (U+200C) between words, so a hand-typed literal
+      would match zero elements and degrade the probe to null silently;
+    - the 24h high/low rows are STRUCTURALLY IDENTICAL to the stats row (same
+      classes at the same depth), so only exact caption text separates them;
+    - a stale related-article price sits in a sibling card;
+    - "IRT" appears twice, once on an unrelated trade-widget badge;
+    - #price-trade contains an <input> whose value is a computed IRT amount.
+-->
+
+<div class="flex items-center gap-2">
+  <span class="flex items-center gap-0.5 text-sm font-semibold mt-1"><label>3.03%</label></span>
+  <div class="flex gap-1 items-center">
+    <label>IRT</label>
+    <label class="font-bold text-strong-950 text-[22px]">268,968</label>
+  </div>
+</div>
+
+<!-- unrelated second IRT badge; the adapter must not anchor on this one -->
+<button type="button"><span class="badge">IRT</span></button>
+
+<div id="price-trade">
+  <div class="mt-3 flex items-center justify-between gap-2">
+    <label>قیمت‌تتر</label>
+    <div class="flex gap-1 items-center">
+      <label>268,968</label>
+      <label>تومان</label>
+    </div>
+  </div>
+  <input type="text" value="268,968">
+</div>
+
+<section class="rounded-2xl border">
+  <h2>اطلاعات قیمت تتر</h2>
+  <div class="mt-3.5">
+    <div class="flex items-center justify-between gap-2.5 py-2">
+      <span class="flex min-w-0 shrink-0 items-center gap-1"><label>بالاترین قیمت (۲۴h)</label></span>
+      <span class="mx-1 h-px min-w-3 flex-1 border-b border-dotted"></span>
+      <div class="shrink-0"><label>271,000</label></div>
+    </div>
+    <div class="flex items-center justify-between gap-2.5 py-2">
+      <span class="flex min-w-0 shrink-0 items-center gap-1"><label>پایین‌ترین قیمت (۲۴h)</label></span>
+      <span class="mx-1 h-px min-w-3 flex-1 border-b border-dotted"></span>
+      <div class="shrink-0"><label>259,000</label></div>
+    </div>
+    <div class="flex items-center justify-between gap-2.5 py-2">
+      <span class="flex min-w-0 shrink-0 items-center gap-1"><label>قیمت (تومان)</label></span>
+      <span class="mx-1 h-px min-w-3 flex-1 border-b border-dotted"></span>
+      <div class="shrink-0"><label>268,968</label></div>
+    </div>
+  </div>
+</section>
+
+<section class="rounded-2xl border">
+  <h2 class="sr-only">قیمت لحظه‌ای تتر</h2>
+  <label>خرید تتر (USDT) و مشاهده قیمت لحظه ای تتر: امروز قیمت تتر 268,968 تومان (1 تتر) با تغییرات ۲۴ ساعته است.</label>
+</section>
+
+<!-- stale related-article price: must never be read -->
+<div class="rounded-2xl border">
+  <a href="#"><label>قیمت تتر امروز 5 مهر 1405 به تومان، 235,388 تومان است. دلیل رشد قیمت</label></a>
+</div>
+
+</body></html>

@@ -1,0 +1,9 @@
+node_modules/
+server.log
+*.log
+shots/
+data/
+state/
+_site/
+.zcode/
+.zcodeignore

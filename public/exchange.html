@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="fa-IR" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>جزئیات صرافی — پایش قیمت تتر</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<div class="glow glow-ok" id="glowOk"></div>
+<div class="glow glow-bad" id="glowBad"></div>
+<div class="glow glow-warn" id="glowWarn"></div>
+
+<header class="topbar">
+  <a class="brand" href="/">
+    <div class="brand-mark" aria-hidden="true">₮</div>
+    <div class="brand-text">
+      <h1>پایش دستور حذف قیمت تتر</h1>
+      <p>بررسی خودکار رعایت دستور حذف قیمت USDT در صرافی‌های تحت نظارت</p>
+    </div>
+  </a>
+
+  <div class="topbar-actions">
+    <div class="policy-chip">انتظار: <span id="policyLabel">پنهان بودن قیمت</span></div>
+    <div class="pill" id="livePill" data-state="loading">
+      <span class="dot"></span><span id="livePillText">در حال بررسی…</span>
+    </div>
+    <button class="btn btn-primary" id="refreshBtn" type="button">
+      <span class="btn-spinner" aria-hidden="true"></span>
+      <span>بررسی مجدد این صرافی</span>
+    </button>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <a class="back-link" href="/">بازگشت به همه صرافی‌ها</a>
+
+  <section class="hero card" id="hero" data-state="loading">
+    <div class="hero-head">
+      <div>
+        <h2 id="heroTitle">در حال بررسی…</h2>
+        <p class="hero-desc" id="heroDesc">لطفاً چند لحظه صبر کنید.</p>
+      </div>
+      <div class="hero-badge" id="heroBadge">—</div>
+    </div>
+
+    <div class="ex-price" id="priceBox" hidden>
+      <span class="ex-price-label">قیمت نمایش‌داده‌شده در سایت</span>
+      <span class="ex-price-value" id="priceValue">—</span>
+      <span class="ex-price-unit" id="priceUnit">تومان</span>
+    </div>
+
+    <div class="ex-flash" id="flashNote" hidden>
+      <b>نکته:</b><span id="flashText"></span>
+    </div>
+
+    <div class="hero-foot">
+      <div class="meta-row">
+        <span class="meta"><span class="meta-k">صرافی</span><span class="meta-v" id="metaName">—</span></span>
+        <span class="meta"><span class="meta-k">نشانی</span><span class="meta-v mono" id="metaHost">—</span></span>
+        <span class="meta"><span class="meta-k">آخرین بررسی</span><span class="meta-v" id="metaChecked">—</span></span>
+        <span class="meta"><span class="meta-k">بررسی بعدی</span><span class="meta-v" id="metaNext">—</span></span>
+      </div>
+    </div>
+  </section>
+
+  <section class="stats-grid">
+    <div class="card stat">
+      <span class="stat-label">نرخ رعایت دستور</span>
+      <span class="stat-value" id="statCompliance">—</span>
+      <span class="stat-hint" id="statComplianceHint">—</span>
+    </div>
+    <div class="card stat">
+      <span class="stat-label">تعداد تخلف‌ها</span>
+      <span class="stat-value" id="statViolations">—</span>
+      <span class="stat-hint" id="statViolationsHint">—</span>
+    </div>
+    <div class="card stat">
+      <span class="stat-label">آخرین تخلف</span>
+      <span class="stat-value" id="statLastViolation">—</span>
+      <span class="stat-hint" id="statLastViolationHint">—</span>
+    </div>
+    <div class="card stat">
+      <span class="stat-label">میانگین زمان بررسی</span>
+      <span class="stat-value" id="statDuration">—</span>
+      <span class="stat-hint">بارگذاری صفحه و استخراج داده</span>
+    </div>
+  </section>
+
+  <section class="card panel">
+    <div class="panel-head">
+      <h3>محل‌های بررسی‌شده در صفحه</h3>
+      <span class="tag" id="probeTag">—</span>
+    </div>
+    <div class="ex-probes" id="probeList">
+      <p class="ex-desc">در حال بارگذاری…</p>
+    </div>
+    <p class="note" id="detailNote">—</p>
+  </section>
+
+  <section class="card panel" id="shotPanel" hidden>
+    <div class="panel-head">
+      <h3>شواهد تصویری</h3>
+      <span class="tag" id="shotTag">—</span>
+    </div>
+    <div class="ex-shots" id="shotList"></div>
+  </section>
+
+  <section class="card panel settings">
+    <div class="panel-head"><h3>تنظیمات پایش</h3></div>
+    <div class="settings-body">
+      <label class="field">
+        <span class="field-label">فاصله بین بررسی‌ها</span>
+        <select id="intervalSelect">
+          <option value="30">هر ۳۰ ثانیه</option>
+          <option value="60">هر ۱ دقیقه</option>
+          <option value="120">هر ۲ دقیقه</option>
+          <option value="300">هر ۵ دقیقه</option>
+          <option value="600" selected>هر ۱۰ دقیقه</option>
+        </select>
+      </label>
+    </div>
+  </section>
+
+  <section class="card panel">
+    <div class="panel-head">
+      <h3>تاریخچه بررسی‌های این صرافی</h3>
+      <span class="tag" id="historyTag">—</span>
+    </div>
+    <div class="table-scroll">
+      <table class="log">
+        <thead>
+          <tr>
+            <th>زمان</th>
+            <th>وضعیت</th>
+            <th>قیمت روی صفحه</th>
+            <th>یادداشت</th>
+          </tr>
+        </thead>
+        <tbody id="logBody">
+          <tr class="empty"><td colspan="4">هنوز بررسی‌ای انجام نشده است.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <span>داده‌های این داشبورد فقط برای پایش وضعیت نمایش قیمت است و مبنای معامله نیست.</span>
+  </footer>
+</main>
+
+<script src="config-site.js"></script>
+<script src="common.js"></script>
+<script src="exchange.js"></script>
+</body>
+</html>

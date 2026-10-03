@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="fa" dir="rtl"><head><meta charset="utf-8"><title>خرید و فروش تتر از صرافی ارز دیجیتال کیف پول من</title></head><body>
+
+<!--
+  Kifpool-shaped fixture. The price is genuinely withheld: the slot holds an
+  empty state, never a number.
+
+  The two decoys below are the ONLY digit-bearing nodes on the real page:
+    * "$1"  — the USD peg. It is a real number greater than zero, so a probe
+              that read it would report a FALSE VIOLATION.
+    * "0%"  — the change indicator.
+  Both must stay unread. They are deliberately placed inside the price slot's
+  own card, which is where a careless selector would reach for them.
+-->
+
+<div id="chart">
+  <div class="card">
+    <div role="status" class="col-span-full w-full flex items-center justify-center text-title h-full">
+      <span class="text-xl">موردی برای نمایش موجود نیست!</span>
+    </div>
+  </div>
+</div>
+
+<div id="product">
+  <div class="flex items-center gap-2">
+    <!-- USD peg: always 1, must never be treated as the tether price -->
+    <div class="text-3xl font-normal">$1</div>
+    <!-- change indicator -->
+    <span class="inline-block">0%</span>
+  </div>
+  <a aria-label="صفحه قیمت تتر" href="/markets/price-usdt">قیمت تتر</a>
+</div>
+
+<!-- unrelated numbers elsewhere on the page; never price of tether -->
+<div class="footer"><span>19</span><span>2,048</span></div>
+
+</body></html>

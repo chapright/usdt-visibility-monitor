@@ -1,0 +1,20 @@
+{
+  "name": "bitpin-usdt-monitor",
+  "version": "1.0.0",
+  "description": "Dashboard that checks whether bitpin.ir shows the USDT price",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node test/run-tests.js",
+    "test:dom": "node test/probe-dom.js",
+    "verify:shots": "node test/verify-shots.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "express": "^4.21.2",
+    "playwright": "^1.56.1"
+  }
+}

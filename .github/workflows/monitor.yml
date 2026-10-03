@@ -1,0 +1,100 @@
+name: Monitor
+
+on:
+  schedule:
+    # Every 15 minutes, offset from the busy :00 slot. GitHub may still delay
+    # scheduled runs by a few minutes under load.
+    - cron: '7,22,37,52 * * * *'
+  workflow_dispatch:
+
+# One check cycle at a time; a run that overruns its slot is replaced by the
+# next one instead of piling up.
+concurrency:
+  group: monitor
+  cancel-in-progress: true
+
+permissions:
+  contents: write # daily keepalive commit
+  pages: write # publish the dashboard
+  id-token: write # Pages deployment auth
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Cache Playwright browser
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Restore monitor state and shots
+        uses: actions/cache@v4
+        with:
+          path: |
+            state/
+            shots/
+          key: monitor-state-v1
+
+      - name: Run one check cycle
+        env:
+          HEADLESS: 'true'
+          BROWSER_CHANNEL: none
+          STATE_IN: state/store.json
+          STATE_OUT: state/store.json
+          DATA_DIR: data
+          KEEPALIVE_FILE: last-run.json
+        run: node scripts/run-once.js
+
+      - name: Assemble static site
+        env:
+          PAGES_BASE: /${{ github.event.repository.name }}/
+          DATA_DIR: data
+        run: node scripts/assemble-site.js
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - name: Deploy to GitHub Pages
+        id: deploy
+        uses: actions/deploy-pages@v4
+
+      # GitHub disables scheduled workflows after 60 days of repository
+      # inactivity, so commit a tiny status file once a day.
+      - name: Daily keepalive commit
+        run: |
+          if [ "$(date -u +'%H%M')" != "0052" ]; then
+            echo "not the daily keepalive slot; skipping"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add last-run.json
+          if git diff --cached --quiet; then
+            echo "nothing to commit"
+            exit 0
+          fi
+          git commit -m "monitor: daily status snapshot"
+          git push
